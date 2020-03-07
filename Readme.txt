@@ -3,7 +3,7 @@ Using Python 3
 --- IdentifySongs.py --- 
 
 Just need to run and give it "ROMName".smc.  Will create an output file with all of the known songs for levels/submaps as 
-long as the ROM used AddMusicK.  
+long as the ROM used AddMusicK.  Can use Lunar Magic to find the level numbers.  
 
 - Needs the SMW_Songs.txt database file in the same directory.  
 
