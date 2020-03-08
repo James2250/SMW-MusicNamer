@@ -55,6 +55,7 @@ def Handle_AddMusicK(File):
 
 		SongNum = 0
 		
+		#should be a length check instead, oh well 
 		while data4 != "ff" or data5 != "ff" or data6 != "ff":   #FF FF FF means end of song pointer data	
 			File.seek(FilePosition + (SongNum * 3))
 			
@@ -67,26 +68,35 @@ def Handle_AddMusicK(File):
 			
 			IntAddr2 = int(NewAddr, 0)
 			
+			if IntAddr2 == 0xFFFFFF:  #end of table
+				break 
+				
 			IntAddr2 = SNESToPC(IntAddr2) 
 			IntAddr2 = IntAddr2 + 512  #header
 			
 			IntAddr2 -= 4  #go back to size after STAR
-			File.seek(IntAddr2, 0) 
 			
-			size1 = int("0x" + File.read(1).hex(), 0)    #STAR size 1  
-			size2 = int("0x" + File.read(1).hex(), 0)    #STAR size 2 
+			try:
+				File.seek(IntAddr2, 0) 
+				
+				size1 = int("0x" + File.read(1).hex(), 0)    #STAR size 1  
+				size2 = int("0x" + File.read(1).hex(), 0)    #STAR size 2 
 
-			File.read(2)  #ignore inverse size
-			
-			TotalSize = size1 | size2 << 8
-			FinalData = (File.read(TotalSize).hex())
-			#FinalData = File.read(60).hex()             #lets try with first 60 bytes of song
-			
-			SongsInROM.append(FinalData)
-			SongNum += 1 
+				File.read(2)  #ignore inverse size
+				
+				TotalSize = size1 | size2 << 8
+				FinalData = (File.read(TotalSize).hex())
+				
+				SongsInROM.append(FinalData)
+				SongNum += 1 
+				
+			except: 
+				print("Error going to song address, ending early")
 			
 	else:
 		print("Not MusicK")
+		
+	print("Test")
 	
 def Handle_AddMusicM(File):
 	address = SNESToPC(0x8FB464) #addmusicM 70 77 07 00  
