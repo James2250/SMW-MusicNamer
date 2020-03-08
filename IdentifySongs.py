@@ -95,8 +95,6 @@ def Handle_AddMusicK(File):
 			
 	else:
 		print("Not MusicK")
-		
-	print("Test")
 	
 def Handle_AddMusicM(File):
 	address = SNESToPC(0x8FB464) #addmusicM 70 77 07 00  
