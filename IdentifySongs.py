@@ -206,7 +206,7 @@ def ScanLevelDataForID(File, Index):
 	data2 = "AA"
 	data3 = "AA"
 	
-	while True:
+	while True: 
 		data = File.read(1).hex()
 		
 		if data == "40":
@@ -237,8 +237,8 @@ def ScanLevelDataForID(File, Index):
 			if data2 == "54":
 				data3 = File.read(1).hex()   #STAR
 				
-				if data2 == "41":
-						break
+				if data3 == "41":
+						break  #Didn't find song ID
 	
 #Reading from Layer 1 pointers at 0x05E000.  https://smwspeedruns.com/Level_Data_Format#Pointer_Tables
 def GetSongIDs(File):
@@ -258,7 +258,7 @@ def GetSongIDs(File):
 		data3 = File.read(1).hex()
 
 		addr = data3 + data2 + data  
-		
+
 		if addr in LevelAddresses:  #seen before, means is a not used level 
 			Index += 1
 			continue
