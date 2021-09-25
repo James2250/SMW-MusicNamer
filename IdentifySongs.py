@@ -279,7 +279,7 @@ def GetSongIDs(File):
 		
 #Songs from Feb 22nd 2020 - July 28 2011
 def ReadSongDatabase():
-	File = open("SMW_Songs.txt", "r")
+	File = open("SMW_Songs.txt", "r",encoding='utf-8')
 	content = File.readlines()
 	
 	for line in content:
@@ -387,8 +387,8 @@ def main():
 		print("Program finished, data put in Output.txt")
 		input()
 		
-	except:
-		print("File not found")
+	except Exception as e: 
+		print(e)
 		input()
 		
 	
