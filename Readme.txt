@@ -21,10 +21,9 @@ https://www.smwcentral.net/?p=section&s=smwmusic and output 1 file of all of the
 
 - Needs to be in the same folder as AddmusicK.exe.  
 
-- Add Song1.txt to the end of Addmusic_list.txt in the AddmusicK folder.  
-  Is what ConvertMusic renames each of the song text files to when going through the zip folders.
+- Delete all songs under Locals/Globals and add "0A Song1.txt" to the Locals section in Addmusic_list.txt in the AddmusicK folder.  
   
-- Needs to have an expanded ROM called ROMo.smc in the same directory (save a level in lunar magic or use lunar expand)  
+- Needs to have an expanded US ROM (at least 1MB) called ROMo.smc in the same directory (save a level in lunar magic or use lunar expand)  
   Not provided here.  
 
 - Doesn't handle songs with sample groups, but handles all other samples.  Copies any samples found to the AddMusicK samples
@@ -33,5 +32,5 @@ https://www.smwcentral.net/?p=section&s=smwmusic and output 1 file of all of the
 - Does not support any of the __MACOSX songs.  
 
 
-AddMusicK
+AddMusicK 1.0.8 
 https://www.smwcentral.net/?p=section&a=details&id=17546

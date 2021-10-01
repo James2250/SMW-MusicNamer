@@ -25,68 +25,68 @@ def SNESToPC(addr):
 	addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF))
 	return addr
 
-def ReadROMData(File):	
-	address = SNESToPC(0x0E8000) #addmusic @amk
-	address = address + 512  #200 hex header
-	
-	File.seek(address, 0)  #@amk 
-	amkTest = File.read(4)
-	
-	if amkTest[0] == 64:  # @ symbol
-		File.read(4) # skip forward to music pointer
-		
-	##---------------------------------##
-		data = File.read(1).hex()
-		data2 = File.read(1).hex()
-		data3 = File.read(1).hex()
-		
-		addr = data3 + data2 + data  #main music pointer
-		addr = "0x" + addr
+def ReadROMData(File, OutputFile):	
+    address = SNESToPC(0x0E8000) #addmusic @amk
+    address = address + 512  #200 hex header
+    
+    File.seek(address, 0)  #@amk 
+    amkTest = File.read(4)
+    
+    if amkTest[0] == 64:  # @ symbol
+        File.read(4) # skip forward to music pointer
+        
+    ##---------------------------------##
+        data = File.read(1).hex()
+        data2 = File.read(1).hex()
+        data3 = File.read(1).hex()
+        
+        addr = data3 + data2 + data  #main music pointer
+        addr = "0x" + addr
 
-		IntAddr = int(addr, 0)
-		
-		IntAddr = SNESToPC(IntAddr) 
-		IntAddr = IntAddr + 512  #header
-		
-		File.seek(IntAddr, 0) 
-		File.read(30)   #specific song pointer we want is 30 bytes ahead, 00 00 00 00 before then
-		
-	##---------------------------------##
-		data4 = File.read(1).hex()
-		data5 = File.read(1).hex()
-		data6 = File.read(1).hex()
-		
-		NewAddr = data6 + data5 + data4  #main music pointer
-		NewAddr = "0x" + NewAddr
-		
-		IntAddr2 = int(NewAddr, 0)
-		
-		IntAddr2 = SNESToPC(IntAddr2) 
-		IntAddr2 = IntAddr2 + 512  #header
-		
-		IntAddr2 -= 4  #go back to size after STAR
-		File.seek(IntAddr2, 0) 
-		
-		size1 = int("0x" + File.read(1).hex(), 0)    #STAR size 1  
-		size2 = int("0x" + File.read(1).hex(), 0)    #STAR size 2 
+        IntAddr = int(addr, 0)
+        
+        IntAddr = SNESToPC(IntAddr) 
+        IntAddr = IntAddr + 512  #header
+        
+        File.seek(IntAddr, 0) 
+        File.read(30)   #specific song pointer we want is 30 bytes ahead, 00 00 00 00 before then
+        
+    ##---------------------------------##
+        data4 = File.read(1).hex()
+        data5 = File.read(1).hex()
+        data6 = File.read(1).hex()
+        
+        NewAddr = data6 + data5 + data4  #main music pointer
+        NewAddr = "0x" + NewAddr
+        
+        IntAddr2 = int(NewAddr, 0)
+        
+        IntAddr2 = SNESToPC(IntAddr2) 
+        IntAddr2 = IntAddr2 + 512  #header
+   
+        IntAddr2 -= 4  #go back to size after STAR
+        File.seek(IntAddr2, 0) 
+        
+        size1 = int("0x" + File.read(1).hex(), 0)    #STAR size 1  
+        size2 = int("0x" + File.read(1).hex(), 0)    #STAR size 2 
 
-		File.read(2)  #ignore inverse size
-		
-		TotalSize = size1 | size2 << 8
-		FinalData = (File.read(TotalSize).hex())
-		
-		print(ZipFileName + " -- " + TxtFileWorkingOn + " : " + FinalData)
-		
-		File.close()
-		
-		os.remove("ROM.smc")	
-		os.remove("ROM.msc")
-		os.remove("ROM.smc~")
-		
-	else:
-		print(ZipFileName + " -- " + TxtFileWorkingOn + " FAILED TO PATCH " )
+        File.read(2)  #ignore inverse size
+        
+        TotalSize = size1 | size2 << 8
+        FinalData = (File.read(TotalSize).hex())
+        
+        OutputFile.write(ZipFileName + " -- " + TxtFileWorkingOn + " : " + FinalData + "\n")
+        
+        File.close()
+        
+        os.remove("ROM.smc")	
+        os.remove("ROM.msc")
+        os.remove("ROM.smc~")
+        
+    else:
+        OutputFile.write(ZipFileName + " -- " + TxtFileWorkingOn + " FAILED TO PATCH \n" )
 
-def ExtractSongFromZip(path):
+def ExtractSongFromZip(path, OutputFile):
 	global SampleFolderName
 	global TxtFileWorkingOn
 	
@@ -153,47 +153,49 @@ def ExtractSongFromZip(path):
 		os.system('cmd /c "AddmusicK ROM.smc" -noblock')
 		
 		File = open("ROM.smc", "rb")
-		ReadROMData(File)
+		ReadROMData(File, OutputFile)
 		
 		count += 1 
 
 def main():
-	sys.stdout = open('OutputFile.txt', 'w')
+    OutputFile = open('OutputFile.txt', 'a', encoding='utf-8')
+    global ZipFileName
 
-	global ZipFileName
-	
-	for filename in os.listdir("./SONGS"):
-		os.mkdir("./SONGS/TEMP")
-		
-		ListOfTxtFileNames.clear()  
-		ListOfTxtFilePaths.clear()  
+    for filename in os.listdir("./SONGS"):
+        os.mkdir("./SONGS/TEMP")
+        
+        ListOfTxtFileNames.clear()  
+        ListOfTxtFilePaths.clear()  
 
-		ListOfBrrFiles.clear()
-		ListOfCopiedBrrNames.clear()
-		ListOfCopiedBrrFiles.clear()
-		ListOfCopiedBrrFolders.clear()
-		
-		if filename.endswith(".zip"): 
-			ZipFileName = filename
-			
-			with ZipFile("./SONGS/" + filename, 'r') as zipObj:
-				try:
-					zipObj.extractall('./SONGS/TEMP')
-					ExtractSongFromZip("./SONGS/TEMP")
-					
-				except OSError as e:
-					print(filename + " FAILED TO OPEN")  
-			
-		for File in ListOfCopiedBrrFiles:	
-			if os.path.isfile(File):
-				os.remove(File)
-			
-		for Folder in ListOfCopiedBrrFolders:	
-			if os.path.isdir(Folder):
-				shutil.rmtree(Folder) 
-				
-		shutil.rmtree("./SONGS/TEMP")  #can't use os.rmdir, needs empty folder
-		
+        ListOfBrrFiles.clear()
+        ListOfCopiedBrrNames.clear()
+        ListOfCopiedBrrFiles.clear()
+        ListOfCopiedBrrFolders.clear()
+        
+        if filename.endswith(".zip"): 
+            ZipFileName = filename
+            
+            with ZipFile("./SONGS/" + filename, 'r') as zipObj:
+                try:
+                    zipObj.extractall('./SONGS/TEMP')
+                    ExtractSongFromZip("./SONGS/TEMP", OutputFile)
+                    
+                except OSError as e:
+                    OutputFile.write(filename + " FAILED TO OPEN\n")  
+            
+        for File in ListOfCopiedBrrFiles:	
+            if os.path.isfile(File):
+               if File != "./samples/EMPTY.brr":  #don't remove default sample
+                 os.remove(File)
+            
+        for Folder in ListOfCopiedBrrFolders:	
+            if os.path.isdir(Folder):
+                shutil.rmtree(Folder) 
+                
+        shutil.rmtree("./SONGS/TEMP")  #can't use os.rmdir, needs empty folder
+        
+    OutputFile.close()
+        
 
 if __name__== "__main__":
 	main()

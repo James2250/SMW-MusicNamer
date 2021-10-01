@@ -277,7 +277,7 @@ def GetSongIDs(File):
 		Index += 1 
 		
 		
-#Songs from Feb 22nd 2020 - July 28 2011
+#Songs from Sep30 2021 - July 28 2011
 def ReadSongDatabase():
 	File = open("SMW_Songs.txt", "r",encoding='utf-8')
 	content = File.readlines()
