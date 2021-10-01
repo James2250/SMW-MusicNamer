@@ -1,7 +1,8 @@
 # SMW-MusicNamer
 
-Looks like someone made a good version of this, go use that!  (SMW Music Identifier by dtothefourth)
+Looks like someone made a professional music identifier, go use that!  (SMW Music Identifier by dtothefourth)
 https://www.smwcentral.net/?p=section&a=details&id=25891
+
 
 Tries to name custom songs in Super Mario World rom hacks that have inserted music from AddMusicK.  
 Just need to run IdentifyMusic.py and give the filename.  
